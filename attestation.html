@@ -135,7 +135,8 @@ li {
 <!-- HEADER -->
 <div class="header">
     <div class="logo">
-        <img src="https://drive.google.com/uc?export=view&id=1DT0Qa6hf9uqcTg2bgZMaiArdjtKPd6tT" alt="Logo AVH">
+        <img src="https://raw.githubusercontent.com/tibari1980/n8n_logo_image/main/cfrp.png"
+             alt="Logo CFRP">
     </div>
     <div>
         <div class="institution-name">ASSOCIATION VALENTIN HAÜY</div>
@@ -209,4 +210,46 @@ li {
 <!-- SCRIPTS -->
 <script>
 /* DATE FR */
-document.getElementById("dateJour").inner
+document.getElementById("dateJour").innerText =
+    new Date().toLocaleDateString('fr-FR', { day:'numeric', month:'long', year:'numeric' });
+
+/* CIVILITÉ */
+const sex = "{{$json.sex}}".toLowerCase().trim();
+document.getElementById("civilite").innerText = (sex === "femme") ? "Madame" : "Monsieur";
+
+/* ===== QR CODE SVG (sans librairie) ===== */
+const qrData = JSON.stringify({
+    nom: "{{$json.nom}}",
+    prenom: "{{$json.prenom}}",
+    date_naissance: "{{$json.date_naissance}}",
+    formation: "{{$json.formation}}"
+});
+
+function generateSimpleQR(text) {
+    const size = 90;
+    let svg = `<svg viewBox="0 0 ${size} ${size}" width="${size}" height="${size}" xmlns="http://www.w3.org/2000/svg">`;
+    svg += `<rect width="100%" height="100%" fill="white"/>`;
+
+    let hash = 0;
+    for (let i = 0; i < text.length; i++) {
+        hash = text.charCodeAt(i) + ((hash << 5) - hash);
+    }
+
+    let cell = size / 15;
+    for (let y = 0; y < 15; y++) {
+        for (let x = 0; x < 15; x++) {
+            if ((hash >> (x + y)) & 1) {
+                svg += `<rect x="${x*cell}" y="${y*cell}" width="${cell}" height="${cell}" fill="black"/>`;
+            }
+        }
+    }
+
+    svg += `</svg>`;
+    return svg;
+}
+
+document.getElementById("qr").innerHTML = generateSimpleQR(qrData);
+</script>
+
+</body>
+</html>
